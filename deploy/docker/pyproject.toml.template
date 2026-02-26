@@ -1,0 +1,93 @@
+# pyproject.toml — Python project template
+# Copy to project root and customize
+#
+# Package managers:
+# - uv: uv pip install . (fast, recommended)
+# - poetry: poetry install (with groups)
+# - pip: pip install .
+
+[project]
+name = "{project-name}"
+version = "0.1.0"
+description = "{Project description}"
+requires-python = ">=3.11"
+dependencies = [
+    # Core dependencies here
+    # "aiogram>=3.0",
+    # "httpx>=0.27",
+    # "pydantic>=2.0",
+    # "pydantic-settings>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+]
+
+# ═══════════════════════════════════════
+# Alternative: Poetry format (uncomment)
+# ═══════════════════════════════════════
+
+# [tool.poetry]
+# name = "{project-name}"
+# version = "0.1.0"
+#
+# [tool.poetry.dependencies]
+# python = ">=3.11,<3.14"
+#
+# [tool.poetry.group.dev.dependencies]
+# pytest = "^8.0"
+# pytest-asyncio = "^0.24"
+# ruff = "^0.8"
+#
+# # Optional: separate groups for different environments
+# [tool.poetry.group.vps.dependencies]
+# # VPS-specific deps
+#
+# [tool.poetry.group.mac.dependencies]
+# # Mac-specific deps
+
+# ═══════════════════════════════════════
+# Ruff (linter + formatter)
+# ═══════════════════════════════════════
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B"]
+# E: pycodestyle errors
+# F: pyflakes
+# I: isort (import sorting)
+# N: pep8 naming
+# W: pycodestyle warnings
+# B: bugbear (common bugs)
+
+# ═══════════════════════════════════════
+# Pytest
+# ═══════════════════════════════════════
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "e2e: End-to-end tests (require running services)",
+]
+
+# ═══════════════════════════════════════
+# Build system
+# ═══════════════════════════════════════
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+# For poetry:
+# requires = ["poetry-core"]
+# build-backend = "poetry.core.masonry.api"

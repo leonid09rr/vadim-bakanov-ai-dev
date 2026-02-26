@@ -1,0 +1,62 @@
+# DEV environment on VPS
+# Usage: docker compose -f docker-compose.dev.yml up -d
+#
+# CUSTOMIZE: Replace {project} with your project name
+#            Update ports, environment variables, DB credentials
+
+services:
+  {project}-dev-postgres:
+    image: postgres:16-alpine
+    container_name: {project}-dev-postgres
+    restart: unless-stopped
+    volumes:
+      - {project}-dev-postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "${DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME:-app}"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - {project}-dev-network
+
+  {project}-dev-redis:
+    image: redis:7-alpine
+    container_name: {project}-dev-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass "${REDIS_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - {project}-dev-network
+
+  {project}-dev-app:
+    build: .
+    container_name: {project}-dev-app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8080"    # Bind to localhost only (nginx will proxy)
+    depends_on:
+      {project}-dev-postgres:
+        condition: service_healthy
+      {project}-dev-redis:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: "postgresql://${DB_USER:-postgres}:${DB_PASSWORD}@{project}-dev-postgres:5432/${DB_NAME:-app}"
+      REDIS_URL: "redis://:${REDIS_PASSWORD}@{project}-dev-redis:6379/0"
+    networks:
+      - {project}-dev-network
+
+volumes:
+  {project}-dev-postgres-data:
+
+networks:
+  {project}-dev-network:
+    name: {project}-dev-network

@@ -1,6 +1,6 @@
 # CLAUDE.md — {Название проекта}
 
-Last Updated: 2026-02-17
+Last Updated: 2026-02-26
 
 ## Язык
 Используй язык ответов, такой же, как пользователь использовал для вопросов.
@@ -121,8 +121,14 @@ main — заморожен (архив)
 {команда тестов}
 
 # Деплой
-{команда деплоя DEV}
-{команда деплоя PROD}
+./scripts/deploy-dev.sh
+./scripts/deploy-prod.sh
+
+# Smoke test
+./scripts/smoke-test.sh [local|dev|prod]
+
+# VPS управление
+./scripts/connect-vps.sh [shell|logs|status|restart|postgres|redis|ssh]
 
 # Логи
 {команда просмотра логов}
@@ -182,9 +188,17 @@ main — заморожен (архив)
 ## Context7 MCP
 При работе с библиотеками/API используй `use context7` для актуальной документации.
 
+## Рабочая память сессии
+- [AGENDA.md](AGENDA.md) — текущий фокус, контекст, следующие шаги (обновляй в конце каждой сессии)
+
 ## Документация
 - [documentation/](documentation/) — архитектура, ошибки
 - [_specs/](_specs/) — спецификации
+- [_specs/templates/](_specs/templates/) — шаблоны user-spec, tech-spec, task
 - [_changelogs/](_changelogs/) — история релизов
 - [_status/](_status/) — текущее состояние окружений
 - [backlog/](backlog/) — задачи
+
+## Инфраструктура
+- [scripts/](scripts/) — скрипты деплоя, тестирования, управления VPS
+- [deploy/](deploy/) — шаблоны Docker, Nginx, pyproject.toml, hooks
