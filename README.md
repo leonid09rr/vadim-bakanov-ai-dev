@@ -1,4 +1,4 @@
-# Claude Code Project Template
+# Claude Code / Codex Project Template
 
 Ready-to-use project scaffold with pre-configured Claude Code skills, agents, rules, and deployment infrastructure.
 
