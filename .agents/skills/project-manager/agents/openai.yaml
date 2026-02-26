@@ -1,0 +1,5 @@
+interface:
+  display_name: "Project Manager"
+  short_description: "Backlog, sprints, priorities"
+policy:
+  allow_implicit_invocation: true

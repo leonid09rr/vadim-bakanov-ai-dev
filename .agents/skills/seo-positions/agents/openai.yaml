@@ -1,0 +1,5 @@
+interface:
+  display_name: "SEO Positions"
+  short_description: "Position monitoring in Google and Yandex"
+policy:
+  allow_implicit_invocation: true

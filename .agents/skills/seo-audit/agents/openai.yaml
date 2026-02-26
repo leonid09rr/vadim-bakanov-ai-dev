@@ -1,0 +1,5 @@
+interface:
+  display_name: "SEO Audit"
+  short_description: "Full SEO + AEO audit with Schema.org"
+policy:
+  allow_implicit_invocation: true

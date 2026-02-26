@@ -1,0 +1,5 @@
+interface:
+  display_name: "Cherry Pick"
+  short_description: "Transfer commits from local to dev"
+policy:
+  allow_implicit_invocation: true

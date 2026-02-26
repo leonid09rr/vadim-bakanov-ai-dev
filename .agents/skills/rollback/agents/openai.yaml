@@ -1,0 +1,5 @@
+interface:
+  display_name: "Rollback"
+  short_description: "Rollback deploy on DEV or PROD"
+policy:
+  allow_implicit_invocation: false

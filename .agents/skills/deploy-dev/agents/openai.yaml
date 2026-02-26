@@ -1,0 +1,5 @@
+interface:
+  display_name: "Deploy DEV"
+  short_description: "Deploy to DEV environment"
+policy:
+  allow_implicit_invocation: true

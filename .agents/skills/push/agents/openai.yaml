@@ -1,0 +1,5 @@
+interface:
+  display_name: "Push"
+  short_description: "Safe push with preview and confirmation"
+policy:
+  allow_implicit_invocation: true

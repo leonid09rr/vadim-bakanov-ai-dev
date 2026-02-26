@@ -1,0 +1,5 @@
+interface:
+  display_name: "SEO Content"
+  short_description: "Keyword research and content optimization"
+policy:
+  allow_implicit_invocation: true

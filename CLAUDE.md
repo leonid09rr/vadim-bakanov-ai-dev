@@ -103,13 +103,13 @@ main — заморожен (архив)
 | **dev** | Тестовое окружение | Только рабочий код (завершённые фичи) |
 | **prod** | Production | Только протестированный код |
 
-### Git-правила для Claude
+### Git-правила для AI-агента
 - **НЕ делать** commit/push/merge без подтверждения пользователя
 - **НЕ делать** force push, reset --hard, rebase без явного запроса
 - **НЕ коммитить** секреты (.env, credentials)
 - **НЕ использовать** `git add -A` или `git add .` — добавлять файлы по отдельности
 - Conventional commits: `<type>(<scope>): <description>`
-- Всегда: `Co-Authored-By: Claude <model> <noreply@anthropic.com>`
+- Всегда: `Co-Authored-By: AI Agent <noreply@anthropic.com>` (Claude) или `Co-Authored-By: AI Agent <noreply@openai.com>` (Codex)
 
 ## Быстрые команды
 
@@ -140,16 +140,29 @@ main — заморожен (архив)
 |-------|----------|
 | `/commit` | AI-генерация commit message |
 | `/push` | Безопасный push с подтверждением |
+| `/backup` | Быстрый бэкап в GitHub (commit + push) |
 | `/cherry-pick` | Перенос коммитов local → dev |
 | `/merge-to-prod` | Merge dev → prod |
 | `/deploy-dev` | Деплой на DEV |
 | `/deploy-prod` | Деплой на PROD (с safety checklist) |
+| `/rollback` | Откат деплоя на DEV/PROD |
+| `/logs` | Просмотр логов DEV/PROD через SSH |
 | `/git-status` | Статус всех веток |
 | `/test` | Тестирование кода |
+| `/qa-tester` | Комплексное QA-тестирование (HTTP, контент, визуал) |
 | `/docs` | Обновление документации после деплоя |
 | `/techdebt` | Поиск технического долга |
 | `/architect` | Архитектурный анализ и планирование |
 | `/project-manager` | Управление задачами и бэклогом |
+| `/seo-research` | Конкурентный SEO-анализ с кластеризацией ключевых слов |
+
+### Глобальные скиллы (установлены в ~/.claude/skills/)
+
+| Скилл | Описание |
+|-------|----------|
+| `/seo-audit` | SEO + AEO аудит с Schema.org разметкой |
+| `/seo-content` | Keyword research и контент-оптимизация |
+| `/seo-positions` | Мониторинг позиций в Google и Yandex |
 
 ## Принципы разработки
 

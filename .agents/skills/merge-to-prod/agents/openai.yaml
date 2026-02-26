@@ -1,0 +1,5 @@
+interface:
+  display_name: "Merge to Prod"
+  short_description: "Merge dev into prod branch"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Git Status"
+  short_description: "Multi-branch status overview"
+policy:
+  allow_implicit_invocation: true

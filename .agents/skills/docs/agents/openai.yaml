@@ -1,0 +1,5 @@
+interface:
+  display_name: "Docs"
+  short_description: "Update documentation after deploy"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,5 @@
+interface:
+  display_name: "QA Tester"
+  short_description: "Comprehensive QA testing"
+policy:
+  allow_implicit_invocation: true

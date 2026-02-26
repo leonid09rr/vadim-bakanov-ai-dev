@@ -1,0 +1,5 @@
+interface:
+  display_name: "Backup"
+  short_description: "Quick backup to GitHub (commit + push)"
+policy:
+  allow_implicit_invocation: true

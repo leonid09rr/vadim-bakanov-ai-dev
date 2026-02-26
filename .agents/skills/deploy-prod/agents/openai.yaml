@@ -1,0 +1,5 @@
+interface:
+  display_name: "Deploy PROD"
+  short_description: "Deploy to PROD with safety checks"
+policy:
+  allow_implicit_invocation: false

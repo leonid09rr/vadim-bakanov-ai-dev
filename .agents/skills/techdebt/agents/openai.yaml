@@ -1,0 +1,5 @@
+interface:
+  display_name: "Tech Debt"
+  short_description: "Scan for technical debt"
+policy:
+  allow_implicit_invocation: true

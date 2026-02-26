@@ -1,0 +1,5 @@
+interface:
+  display_name: "Lawyer"
+  short_description: "Russian commercial law for IP"
+policy:
+  allow_implicit_invocation: true

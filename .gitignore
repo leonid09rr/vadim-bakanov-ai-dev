@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# PRIVATE
+_PRIVATE/
+
 # Claude Code local settings
 .claude/settings.local.json
 

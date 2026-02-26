@@ -1,0 +1,5 @@
+interface:
+  display_name: "Test"
+  short_description: "Run lint, types, unit tests, build"
+policy:
+  allow_implicit_invocation: true

@@ -4,6 +4,18 @@
       "WebFetch(domain:docs.anthropic.com)"
     ]
   },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "agent-teams@ilia-izmailov-plugins": true,
+    "frontend-design@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "think-through@ilia-izmailov-plugins": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "playground@claude-plugins-official": true,
+    "vibe-audit@ilia-izmailov-plugins": true,
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
+  },
   "hooks": {
     "PostToolUse": [
       {

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Architect"
+  short_description: "Architecture analysis and planning"
+policy:
+  allow_implicit_invocation: true

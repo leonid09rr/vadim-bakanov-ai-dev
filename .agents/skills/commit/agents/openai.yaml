@@ -1,0 +1,5 @@
+interface:
+  display_name: "Commit"
+  short_description: "AI-generated conventional commit message"
+policy:
+  allow_implicit_invocation: true

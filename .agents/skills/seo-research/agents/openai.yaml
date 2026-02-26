@@ -1,0 +1,5 @@
+interface:
+  display_name: "SEO Research"
+  short_description: "Competitive SEO analysis with keyword clustering"
+policy:
+  allow_implicit_invocation: true

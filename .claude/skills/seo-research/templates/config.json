@@ -1,0 +1,23 @@
+{
+  "project_name": "example-project",
+  "output_dir": "/path/to/project/seo-research",
+  "competitors": [
+    "competitor1.com",
+    "competitor2.com",
+    "competitor3.com"
+  ],
+  "own_domain": "yourdomain.com",
+  "exclude_patterns": [],
+  "keywords_per_competitor": 1000,
+  "max_position": 20,
+  "cluster_count": "auto",
+  "dataforseo_params": {
+    "language_code": "en",
+    "location_code": 2840
+  },
+  "_comments": {
+    "max_position": "Recommended: 20. Only fetch keywords where competitors rank in top N positions. Saves API credits.",
+    "language_code": "Language for SERP results (e.g., 'en', 'de', 'fr')",
+    "location_code": "Country/region code. 2840=USA, 2826=UK, 2124=Canada. See info/dataforseo-locations.csv for all codes."
+  }
+}
