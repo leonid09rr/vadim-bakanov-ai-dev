@@ -34,7 +34,9 @@ logger = logging.getLogger(__name__)
 
 
 def _require_env(name: str) -> str:
-    value = os.getenv(name)
+    # strip — у Railway env-переменные иногда приходят с trailing whitespace,
+    # а aiogram падает на токене с любым пробелом.
+    value = (os.getenv(name) or "").strip()
     if not value:
         raise SystemExit(f"❌ В .env не задана переменная {name}. См. .env.example")
     return value
