@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from groq import AsyncGroq, GroqError
 
-from .prompts import LEVELS
+from .prompts import LEVELS, SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +71,10 @@ async def _summarize_one(client: AsyncGroq, model: str, level_key: str, transcri
         response = await client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": "Ты — редактор-конспектист. Отвечаешь на русском, кратко и по делу."},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.3,
+            temperature=0.4,
             max_tokens=4000,
         )
     except GroqError as e:

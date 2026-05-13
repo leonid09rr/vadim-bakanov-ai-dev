@@ -10,7 +10,7 @@ from aiogram import Bot, F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.types import BufferedInputFile, FSInputFile, Message
 
-from . import rate_limit
+from . import chat, rate_limit
 from .media import (
     MediaError,
     MediaInfo,
@@ -39,13 +39,17 @@ WELCOME = (
     "Кидай мне:\n"
     "• 🎥 Видео-файл (до 20 МБ из Telegram)\n"
     "• 🎙 Голосовое или video note\n"
-    "• 🔗 Ссылку на YouTube / Reels / TikTok / VK Video / Rutube\n\n"
-    "В ответ получишь три уровня пересказа:\n"
-    "🟢 Лёгкий — список тем\n"
-    "🟡 Средний — тезисы по блокам\n"
-    "🔴 Полный — детальный пересказ с таймкодами\n\n"
+    "• 🔗 Ссылку на YouTube / Reels / TikTok / VK / Rutube / Я.Диск / Google Drive\n\n"
+    "В ответ получишь три уровня разбора:\n"
+    "🟢 Лёгкий — о чём ролик\n"
+    "🟡 Средний — конспект с разбором\n"
+    "🔴 Полный — детальный разбор\n\n"
     "Плюс файлом — полная транскрипция.\n\n"
+    "💬 После разбора можешь задать мне вопрос про видео — я помню его и отвечу.\n\n"
+    "📦 Файл больше 20 МБ? Загрузи на Я.Диск или Google Drive с публичной ссылкой и пришли ссылку.\n\n"
     "Команды:\n"
+    "/ask <вопрос> — спросить про последнее видео\n"
+    "/forget — забыть последнее видео\n"
     "/limits — сколько минут осталось на сегодня\n"
     "/myid — твой Telegram ID\n"
     "/help — эта справка"
@@ -82,6 +86,26 @@ async def on_limits(msg: Message) -> None:
     )
 
 
+@router.message(Command("ask"))
+async def on_ask(msg: Message) -> None:
+    """Явная команда: /ask <вопрос>. Альтернатива простому тексту."""
+    parts = (msg.text or "").split(maxsplit=1)
+    if len(parts) < 2 or not parts[1].strip():
+        await msg.answer("Используй: <code>/ask твой вопрос</code>", parse_mode="HTML")
+        return
+    await _answer_chat_question(msg, parts[1].strip())
+
+
+@router.message(Command("forget"))
+async def on_forget(msg: Message) -> None:
+    user_id = msg.from_user.id
+    if chat.has_transcript(user_id):
+        chat.clear(user_id)
+        await msg.answer("🧹 Забыл последнее видео. Кидай новое.")
+    else:
+        await msg.answer("Мне и так нечего забывать — нового видео не было.")
+
+
 @router.message(F.video | F.audio | F.voice | F.video_note | F.document)
 async def on_media_file(msg: Message, bot: Bot) -> None:
     await _handle(msg, bot, source="file")
@@ -89,12 +113,52 @@ async def on_media_file(msg: Message, bot: Bot) -> None:
 
 @router.message(F.text)
 async def on_text(msg: Message, bot: Bot) -> None:
-    if not is_url(msg.text):
+    text = (msg.text or "").strip()
+    user_id = msg.from_user.id
+
+    if is_url(text):
+        await _handle(msg, bot, source="url")
+        return
+
+    # Не ссылка. Если есть сохранённый транскрипт — считаем это вопросом про видео.
+    if chat.has_transcript(user_id):
+        await _answer_chat_question(msg, text)
+        return
+
+    await msg.answer(
+        "Не вижу ни файла, ни ссылки. Пришли видео или ссылку — разберу.\n\n"
+        "📦 Файл больше 20 МБ? Загрузи на Я.Диск или Google Drive с публичной ссылкой "
+        "и пришли мне ссылку — скачаю без ограничения по размеру."
+    )
+
+
+async def _answer_chat_question(msg: Message, question: str) -> None:
+    user_id = msg.from_user.id
+    if not chat.has_transcript(user_id):
         await msg.answer(
-            "Не вижу ни файла, ни ссылки. Пришли видео или ссылку (YouTube/Reels/TikTok/VK)."
+            "У меня нет сохранённого видео для тебя. Пришли сначала ролик или ссылку — потом обсудим."
         )
         return
-    await _handle(msg, bot, source="url")
+
+    thinking = await msg.answer("🤔 Думаю…")
+    try:
+        answer = await chat.answer_question(user_id, question)
+    except chat.ChatError as e:
+        await thinking.edit_text(f"❌ {e}")
+        return
+    except Exception:
+        logger.exception("Ошибка чата с транскриптом")
+        await thinking.edit_text("❌ Что-то пошло не так. Попробуй ещё раз.")
+        return
+
+    # Telegram режет длинные сообщения — отправляем по частям.
+    parts = _split_for_telegram(answer)
+    if not parts:
+        await thinking.edit_text("🤷 Пустой ответ. Перефразируй вопрос.")
+        return
+    await thinking.edit_text(parts[0])
+    for part in parts[1:]:
+        await msg.answer(part)
 
 
 async def _handle(msg: Message, bot: Bot, source: str) -> None:
@@ -134,11 +198,21 @@ async def _handle(msg: Message, bot: Bot, source: str) -> None:
 
             rate_limit.record_usage(user_id, duration_min)
 
-            await progress.edit_text("✍️ Делаю три уровня пересказа…")
-            summaries = await summarize_all_levels(transcription.text_with_timecodes or transcription.text)
+            await progress.edit_text("✍️ Делаю три уровня разбора…")
+            transcript_text = transcription.text_with_timecodes or transcription.text
+            summaries = await summarize_all_levels(transcript_text)
 
-            await _send_results(msg, transcription.text_with_timecodes or transcription.text, summaries, media)
+            await _send_results(msg, transcript_text, summaries, media)
             await progress.delete()
+
+            # Сохраняем транскрипт для последующего чата с юзером.
+            chat.set_transcript(user_id, transcript_text, media.title)
+            await msg.answer(
+                "💬 Теперь можешь обсудить это видео — просто напиши мне вопрос.\n"
+                "Например: «что главное?», «как это применить?», «что автор имел в виду про X?», "
+                "«с чем он не прав?»\n\n"
+                "Команды: /ask <вопрос>, /forget — забыть видео."
+            )
 
         except MediaError as e:
             await progress.edit_text(f"❌ {e}")
@@ -169,8 +243,13 @@ async def _download_from_telegram(msg: Message, bot: Bot, progress: Message, wor
     file_size = getattr(file_obj, "file_size", None) or 0
     if file_size > TELEGRAM_FILE_LIMIT_BYTES:
         raise MediaError(
-            "Файл больше 20 МБ — Telegram не отдаёт такие ботам через стандартный API. "
-            "Загрузи видео на YouTube/VK/любое облако и пришли ссылкой."
+            "Файл больше 20 МБ — Telegram не отдаёт такие файлы ботам.\n\n"
+            "💡 Загрузи видео в облако с публичной ссылкой и пришли её мне:\n"
+            "• Яндекс.Диск — кнопка «Поделиться»\n"
+            "• Google Drive — доступ «Все, у кого есть ссылка»\n"
+            "• YouTube — видимость «По ссылке» или публичное\n"
+            "• VK / Rutube / TikTok / Reels — любая публичная ссылка\n\n"
+            "По ссылке скачаю без ограничения по размеру."
         )
 
     await progress.edit_text("⬇️ Скачиваю файл из Telegram…")
